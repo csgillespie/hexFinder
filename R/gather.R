@@ -222,7 +222,8 @@ keep_good_ratio_images <- function(paths, download_endpoint, branch) {
 #' @param repository The github repository to search in.
 #' @param token A github personal access token.
 #'   variable github_pat. If that variable is not set, you might run into API
-#'   limits when running too many queries.
+#'   limits when running too many queries. Looks at github_pat and GITHUB_PAT environment
+#'   variables if NULL.
 #' @param logo_patterns String of valid name.extension file names for files to
 #'   look for, separated by |. pkg_name can be used as a placeholder for
 #'   the package name.
@@ -239,12 +240,15 @@ keep_good_ratio_images <- function(paths, download_endpoint, branch) {
 #' @return A URL to a image or NULL if no image was found
 search_repo_logo <- function(pkg_name,
                              repository,
-                             token = Sys.getenv("github_pat"),
+                             token = NULL,
                              logo_patterns = getOption("hexFinder.logo_patterns"), # nolint
                              ignore_patterns = getOption("hexFinder.ignore_patterns")) { # nolint
 
+  if (is.null(token)) {
+    token = Sys.getenv("github_pat", Sys.getenv("GITHUB_PAT"))
+  }
   # Warn user about github pat. Trigers once per session
-  if (token == "" && getOption("hexFinder.pat_warning_first_time")) {
+  if (isFALSE(nzchar(token)) && getOption("hexFinder.pat_warning_first_time")) {
     log("No github personal access token provided.") # nocov
     log("Limited search rates for github will apply.") # nocov
     log("Set up github_pat environmental variable if you plan to query multiple repos in a short time") # nolint #nocov

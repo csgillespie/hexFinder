@@ -7,7 +7,7 @@
 search_repo_logo(
   pkg_name,
   repository,
-  token = Sys.getenv("github_pat"),
+  token = NULL,
   logo_patterns = getOption("hexFinder.logo_patterns"),
   ignore_patterns = getOption("hexFinder.ignore_patterns")
 )
@@ -19,7 +19,8 @@ search_repo_logo(
 
 \item{token}{A github personal access token.
 variable github_pat. If that variable is not set, you might run into API
-limits when running too many queries.}
+limits when running too many queries. Looks at github_pat and GITHUB_PAT environment
+variables if NULL.}
 
 \item{logo_patterns}{String of valid name.extension file names for files to
 look for, separated by |. pkg_name can be used as a placeholder for
