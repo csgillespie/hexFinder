@@ -188,7 +188,7 @@ keep_good_ratio_images <- function(paths, download_endpoint, branch) {
   purrr::keep(paths, \(entry) {
     # trim white space
     info <- glue("{download_endpoint}/{branch}/{entry$path}") |>
-      image_read() |>
+      image_reader() |>
       image_trim() |>
       magick::image_info()
 
@@ -219,7 +219,7 @@ keep_good_ratio_images <- function(paths, download_endpoint, branch) {
 #' Searches a given github repo URL for the best hex logo image.
 #'
 #' @param pkg_name The mane of the package we want the logo for.
-#' @param repository The github repository to search in.
+#' @param repo The github repository to search in.
 #' @param token A github personal access token.
 #'   variable github_pat. If that variable is not set, you might run into API
 #'   limits when running too many queries. Looks at github_pat and GITHUB_PAT environment
@@ -239,7 +239,7 @@ keep_good_ratio_images <- function(paths, download_endpoint, branch) {
 #' @keywords gather internal
 #' @return A URL to a image or NULL if no image was found
 search_repo_logo <- function(pkg_name,
-                             repository,
+                             repo,
                              token = NULL,
                              logo_patterns = getOption("hexFinder.logo_patterns"), # nolint
                              ignore_patterns = getOption("hexFinder.ignore_patterns")) { # nolint
@@ -257,12 +257,12 @@ search_repo_logo <- function(pkg_name,
   }
 
   # if no valid repo is given, abort
-  if (length(repository) == 0 || repository == "") {
+  if (length(repo) == 0 || repo == "") {
     return(NULL)
   }
 
   # api endpoint based on given repo
-  endpoint <- repository |>
+  endpoint <- repo |>
     str_replace(
       "github.com",
       "api.github.com/repos"
@@ -282,7 +282,7 @@ search_repo_logo <- function(pkg_name,
     pkg_name
   )
 
-  download_endpoint <- repository |> str_replace(
+  download_endpoint <- repo |> str_replace(
     "github.com",
     "raw.githubusercontent.com"
   )
